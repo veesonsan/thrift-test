@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	     http://code.alibabatech.com/schema/dubbo
+	     http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<bean id="dubboConfigServer" class="com.iot.chinamobile.rpc.dubbo.config.DubboConfigServer">
+		<property name="applicationName" value="${dubbo.application}" />
+		<property name="registryAddress" value="${dubbo.registry}" />
+		<property name="registryUsername" value="${dubbo.username}" />
+		<property name="registryPassword" value="${dubbo.password}" />
+		<property name="isDefault" value="${dubbo.isDefault}" />
+	</bean>
+
+	<bean id="demoRpcService" class="com.iot.chinamobile.rpc.dubbo.provider.DubboService">
+		<property name="interfaceName" value="org.veeson.dubbo.rpc.facade.DubboService" />
+		<property name="interfaceRef" ref="dubboServiceImpl" />
+		<property name="protocols" value="${dubbo.protocols}" />
+		<property name="owner" value="qinyushun" />
+		<property name="dubboConfigServer" ref="dubboConfigServer" />
+	</bean>
+
+	<bean id="dubboServiceImpl" class="com.iot.chinamobile.thrift.rpc.demo.DubboServiceImpl" />
+	<bean id="dynamicDubboProvider"
+		class="com.iot.chinamobile.rpc.dubbo.source.DynamicDubboProvider">
+		<property name="openLog" value="${logback.dubbo.openLog}" />
+		<property name="targetDubboServiceList" ref="demoRpcService"/>
+	</bean>
+
+	<bean id="dynamicCreateDubboProviderManager"
+		class="com.iot.chinamobile.rpc.dubbo.source.DynamicCreateDubboProviderManager">
+		<property name="dynamicDubboProvider" ref="dynamicDubboProvider" />
+	</bean>
+
+</beans>
